@@ -1,6 +1,8 @@
 package com.mysite.sbb.question;
 
 import com.mysite.sbb.question.Question;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -22,5 +24,8 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     // SQL에서는 특정 문자열을 포함한 데이터를 열에서 찾을 때 Like를 사용한다.
     // 응답 결과가 여러 건인 경우에는 메서드의 리턴 타입을 Question이 아닌 List<Question>으로 작성해야 함.
     List<Question> findBySubjectLike(String subject);
+
+    // Pageable 객체를 입력받아 Page<Question> 타입 객체를 리턴하는 findAll 메서드를 생성
+    Page<Question> findAll(Pageable pageable);
 
 }

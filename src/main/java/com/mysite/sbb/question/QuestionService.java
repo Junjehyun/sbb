@@ -2,10 +2,15 @@ package com.mysite.sbb.question;
 //서비스는 컨트롤러와 리포지터리의 중간에서 엔티티 객체와
 // DTO 객체를 서로 변환하여 양방향에 전달하는 역할을 한다.
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.mysite.sbb.DataNotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,5 +39,12 @@ public class QuestionService {
         q.setContent(content);
         q.setCreateDate(LocalDateTime.now());
         this.questionRepository.save(q);
+    }
+
+    public Page<Question> getList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.asc("createDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return this.questionRepository.findAll(pageable);
     }
 }

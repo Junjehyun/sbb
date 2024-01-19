@@ -1,6 +1,7 @@
 package com.mysite.sbb.answer;
 
 import com.mysite.sbb.question.Question;
+import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,5 +32,8 @@ public class Answer {
 
     // @ManyToOne은 부모 자식 관계를 갖는 구조에서 사용한다. 여기서 부모는 Question, 자식은 Answer라고 할 수 있다.
     // 외래키란 테이블과 테이블 사이의 관계를 구성할 때 연결되는 열을 의미한다.
+
+    @ManyToOne
+    private SiteUser author;
 }
 

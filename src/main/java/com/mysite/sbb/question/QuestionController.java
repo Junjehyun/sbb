@@ -1,6 +1,8 @@
 package com.mysite.sbb.question;
 
 import com.mysite.sbb.answer.AnswerForm;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 // @RequiredArgsConstructor -> 롬복(Lombok)이 제공하는 애너테이션으로,
 // final이 붙은 속성을 포함하는 생성자를 자동으로 만들어 주는 역할을 한다.
@@ -19,6 +22,7 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final UserService userService;
 
     @GetMapping("/list")
     // 매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
@@ -43,11 +47,13 @@ public class QuestionController {
     }
 
     @PostMapping("/create")
-    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult
+    , Principal principal) {
         if (bindingResult.hasErrors()) {
             return "question_form";
         }
-        this.questionService.create(questionForm.getSubject(), questionForm.getContent());
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
         return "redirect:/question/list"; // 질문 저장후 질문목록으로 이동
     }
 }

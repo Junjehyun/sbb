@@ -1,6 +1,7 @@
 package com.mysite.sbb.question;
 //서비스는 컨트롤러와 리포지터리의 중간에서 엔티티 객체와
 // DTO 객체를 서로 변환하여 양방향에 전달하는 역할을 한다.
+import com.mysite.sbb.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,11 +34,12 @@ public class QuestionService {
         }
     }
     // 제목과 내용을 입력받아 이를 질문으로 저장하는 create 메서드.
-    public void create(String subject, String content) {
+    public void create(String subject, String content, SiteUser user) {
         Question q = new Question();
         q.setSubject(subject);
         q.setContent(content);
         q.setCreateDate(LocalDateTime.now());
+        q.setAuthor(user);
         this.questionRepository.save(q);
     }
 

@@ -49,4 +49,16 @@ public class QuestionService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return this.questionRepository.findAll(pageable);
     }
+    // 수정된 질문이 서비스를 통해 처리될 수 있도록 modify 메서드를 추가해보자.
+    public void modify(Question question, String subject, String content) {
+        question.setSubject(subject);
+        question.setContent(content);
+        question.setModifyDate(LocalDateTime.now());
+        this.questionRepository.save(question);
+    }
+
+    // 질문 데이터를 삭제하는 delete 메서드 추가
+    public void delete(Question question) {
+        this.questionRepository.delete(question);
+    }
 }

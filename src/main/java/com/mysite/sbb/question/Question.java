@@ -33,4 +33,7 @@ public class Question {
     // 사용자 한 명이 질문을 여러 개 작성할 수 있기 때문에 ManyToOne
     @ManyToOne
     private SiteUser author;
+
+    // 질문이 언제 수정 되었는가?
+    private LocalDateTime modifyDate;
 }

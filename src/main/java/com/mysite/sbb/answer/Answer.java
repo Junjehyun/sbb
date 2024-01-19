@@ -5,6 +5,7 @@ import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -35,5 +36,8 @@ public class Answer {
 
     @ManyToOne
     private SiteUser author;
+
+    // 답변이 언제 수정되었는가? 추가
+    private LocalDateTime modifyDate;
 }
 

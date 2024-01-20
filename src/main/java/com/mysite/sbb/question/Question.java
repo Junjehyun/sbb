@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Getter //롬복
 @Setter //롬복
@@ -36,4 +37,8 @@ public class Question {
 
     // 질문이 언제 수정 되었는가?
     private LocalDateTime modifyDate;
+
+    // 하나의 질문에 여러사람이 추천할 수 있고, 한 사람이 여러개의 질문을 추천할 수 있으므로 ManyToMany
+    @ManyToMany // 다대다 관계
+    Set<SiteUser> voter;
 }

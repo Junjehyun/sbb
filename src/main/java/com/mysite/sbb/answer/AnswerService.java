@@ -18,7 +18,7 @@ public class AnswerService {
     // 답변을 생성하기 위해 create 메서드를 추가.
     // create 메서드는 입력받은 2개의 매개변수인 question과 content를 사용해 Answer객체를
     // 생성하여 저장.
-    public void create(Question question, String content, SiteUser author) {
+    public Answer create(Question question, String content, SiteUser author) {
         Answer answer = new Answer();
 
         answer.setContent(content);
@@ -26,6 +26,7 @@ public class AnswerService {
         answer.setQuestion(question);
         answer.setAuthor(author);
         this.answerRepository.save(answer);
+        return answer;
 
     }
 
@@ -46,6 +47,12 @@ public class AnswerService {
 
     public void delete(Answer answer) {
         this.answerRepository.delete(answer);
+    }
+
+    // 답변을 추천한 사람을 저장하기 위해 추천인을 저장하는 vote 메서드를 추가.
+    public void vote(Answer answer, SiteUser siteUser) {
+        answer.getVoter().add(siteUser);
+        this.answerRepository.save(answer);
     }
 
 }

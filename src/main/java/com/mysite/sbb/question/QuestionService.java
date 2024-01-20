@@ -1,12 +1,15 @@
 package com.mysite.sbb.question;
 //서비스는 컨트롤러와 리포지터리의 중간에서 엔티티 객체와
 // DTO 객체를 서로 변환하여 양방향에 전달하는 역할을 한다.
+import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.user.SiteUser;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.mysite.sbb.DataNotFoundException;
 
@@ -20,6 +23,24 @@ import java.util.Optional;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+
+    private Specification<Question> search(String kw) {
+        return new Specification<>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Predicate toPredicate(Root<Question> q, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                query.distinct(true);  // 중복을 제거
+                Join<Question, SiteUser> u1 = q.join("author", JoinType.LEFT);
+                Join<Question, Answer> a = q.join("answerList", JoinType.LEFT);
+                Join<Answer, SiteUser> u2 = a.join("author", JoinType.LEFT);
+                return cb.or(cb.like(q.get("subject"), "%" + kw + "%"), // 제목
+                        cb.like(q.get("content"), "%" + kw + "%"),      // 내용
+                        cb.like(u1.get("username"), "%" + kw + "%"),    // 질문 작성자
+                        cb.like(a.get("content"), "%" + kw + "%"),      // 답변 내용
+                        cb.like(u2.get("username"), "%" + kw + "%"));   // 답변 작성자
+            }
+        };
+    }
 
     public List<Question> getList() {
         return this.questionRepository.findAll();
@@ -43,11 +64,12 @@ public class QuestionService {
         this.questionRepository.save(q);
     }
 
-    public Page<Question> getList(int page) {
+    public Page<Question> getList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.asc("createDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return this.questionRepository.findAll(pageable);
+        Specification<Question> spec = search(kw);
+        return this.questionRepository.findAll(spec, pageable);
     }
     // 수정된 질문이 서비스를 통해 처리될 수 있도록 modify 메서드를 추가해보자.
     public void modify(Question question, String subject, String content) {
@@ -60,5 +82,10 @@ public class QuestionService {
     // 질문 데이터를 삭제하는 delete 메서드 추가
     public void delete(Question question) {
         this.questionRepository.delete(question);
+    }
+
+    public void vote(Question question, SiteUser siteUser) {
+        question.getVoter().add(siteUser);
+        this.questionRepository.save(question);
     }
 }
